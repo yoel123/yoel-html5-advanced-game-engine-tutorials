@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+
+	<title>game design</title>
+
+ 	
+
+	<style>
+	
+		#y_game
+		{
+			position:relative;
+			background: #000 none repeat scroll 0 0;
+			overflow:hidden;
+			width:300px;
+		    height:500px;
+			
+		    color:white;
+			font-size:2em;
+			
+		    border:10px solid #333;
+		    margin:30px auto;
+		    box-shadow:5px 5px 10px #444;
+			transform-style: preserve-3d;
+			
+			
+		}
+	
+		.entity
+		{
+			position:absolute;
+			background:blue;
+			height:50px;
+			width:50px;
+			-webkit-transform-style: preserve-3d;
+			backface-visibility: hidden;
+			-webkit-transform: translate3d(0,0,0); 
+			transform: rotate(0deg);
+			-moz-transform:  rotate(0deg);
+			
+			
+		}
+		.hitbox
+		{
+			position:absolute;
+			border:solid 1px red;
+		}
+	</style>
+</head> 
+ 
+<body> 
+
+	<div id="y_game"></div>
+
+	
+	<script src="js/jquery-1.7.1.min.js"></script>
+	<script src="js/yoel_dom_game.js"></script>
+	
+	<script>
+	//game main
+	function main()
+	{
+				//worlds
+		window.start_world = new y_world("y_game");
+		window.game_world = new y_world("y_game");
+		window.end_world = new y_world("y_game");
+		//init engine
+		yoel_engine_p.current_world = window.start_world;
+		yoel_engine_p.init();
+
+		var test_e = new extanded_entity(100,100,0,"");
+		var test_e2 = new extanded_entity(200,100,0,"end");
+		var test_e3 = new extanded_entity(250,100,0,"end");
+		var test_e4 = new extanded_entity(250,200,0,"end");
+		var test_e5 = new extanded_entity(150,150,0,"start");
+	
+	    //add it to world	
+		//start world
+        window.start_world.add(test_e);
+		
+		//game world
+        window.game_world.add(test_e2);
+        window.game_world.add(test_e3);
+        window.game_world.add(test_e4);
+		//end world
+        window.end_world.add(test_e5);
+	  
+	  //only start is active at the start...
+	  window.game_world.not_active()
+	  window.end_world.not_active()
+	  
+
+
+	
+	}
+
+
+
+
+
+
+////////extanded_entity///////////
+
+var extanded_entity = function(x,y,z,go_to)
+{
+	this.type = 'extanded_entity'; 
+
+	//extand entity
+	y_entity.call(this,x,y,z,3,"");
+	
+	//what world to go to when clicked
+	this.go_to = go_to;
+
+	
+	this.did_init = false;
+
+}//end extanded_entity
+
+var extanded_entity_p = extanded_entity.prototype; 
+
+extanded_entity_p.init = function()
+{
+	if(!this.did_init)
+	{
+		ytrace("did init");
+			//init click handler
+		 y_entity_p.click_chack.call(this);
+		this.did_init = true;
+	
+		
+	}
+}//end init
+
+extanded_entity_p.update = function()
+{
+	//do stuff when class created
+	this.init();
+	
+	
+	this.click();
+	
+	
+	//call parent update func
+	y_entity_p.update.call(this); 
+
+}//end update
+
+
+
+extanded_entity_p.click = function()
+{
+	if(this.is_clicked){}else{return;}//exit if no click
+	//go to end world
+	if(this.go_to == "end")
+	{
+		y_world_p.change_world.call(window.game_world,window.end_world);
+		return;
+	}	
+	//go to start world
+	if(this.go_to == "start")
+	{
+		y_world_p.change_world.call(window.end_world,window.start_world);
+		return;
+	}
+	//go to game
+	y_world_p.change_world.call(window.start_world,window.game_world);
+}//end click
+
+	
+
+
+////////end extanded_entity///////////
+
+
+
+	//main
+	main();
+	</script>
+
+</body> 
+</html>

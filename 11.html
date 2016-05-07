@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>tutorial 11</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="css/flat-ui.min.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="js/vendor/html5shiv.js"></script>
+      <script src="js/vendor/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+        <h1>yoel html5 2d game engine programming tut 11</h1>
+		<h2>health bar</h2>
+		<hr>
+		<div class="row">
+			<div class="tile  palette palette-peter-river">
+				<p>
+				in this tutorial i will show how use my game engine health bar class.
+			    </p>
+			</div>
+			<div class="ypart1">
+				<p>
+				</p>
+				
+				<p>
+				the finished project is in file 11)health bar
+				</p>
+				
+				<p>
+				</p>
+				<p>
+					first we will create an instance of y_bar class.<br>
+					and create two attributes,hp and max_hp, hp will represent<br>
+					the current hp that is represented as a health bar<br>
+					max hp is the maximum value of hp can get to.
+					
+				</p>
+				<pre><code class="js">
+				////////extanded_entity///////////
+
+				var extanded_entity = function(x,y,z,yimg)
+				{
+					this.type = 'extanded_entity'; 
+
+					//extand entity
+					y_entity.call(this,x,y,z,3,yimg);
+					<span class=" palette-alizarin" >
+					this.hp = 50 ;
+					this.max_hp = 50 ;
+					
+					this.health_bar = new y_bar(x,y,z,this.max_hp,this.hp);
+					this.health_bar.max_width = 100;
+					</span>
+					this.did_init = false;
+
+				}//end extanded_entity
+				</code></pre>
+				
+				<p>
+					
+					then we will initiate y_bar class in the init method.
+				</p>
+				<pre><code class="js">
+				extanded_entity_p.init = function()
+				{
+					if(!this.did_init)
+					{
+						ytrace("did init");
+						<span class=" palette-alizarin" >
+						//init health_bar
+						this.health_bar.init();
+						</span>
+						this.did_init = true;
+					
+					
+					}
+					
+				}//end init
+				</code></pre>
+			</div><!--end ypart1-->
+			<div class="ypart2">
+				<p>
+				now we will create an update method for the health bar and use it in update method<br>
+				</p>
+			
+				<pre><code class="js">
+				extanded_entity_p.update = function()
+				{
+					//do stuff when class created
+					this.init();
+					
+<span class=" palette-alizarin" >
+					this.update_health_bar();</span>
+					this.reduce_hp();
+					this.change_color();
+					
+					
+					//call parent update func
+					y_entity_p.update.call(this); 
+
+				}//end update<span class=" palette-alizarin" >
+				extanded_entity_p.update_health_bar = function()
+				{
+					//update health_bar 
+					this.health_bar.update();
+					
+					//follow parent and be a little above it
+					this.health_bar.parent_pos(this,0,-40);
+					
+						
+					
+				}//end update_health_bar</span>
+
+				</code></pre>
+				<p>
+				y_bar.update (this.health_bar.update();) is needed to update y_bar entity.<br>
+				y_bar.parent_pos(parent,x,y) (this.health_bar.parent_pos(this,0,-40);) positions the y_bar<br>
+				entity relative to its parent entity in this case the its -40 pixels on the y axis of the parent pos at all times.
+				
+				<br>
+				<br>
+				now we will show you how to change the length of the y_bar depending on the parent<br>
+				attribute hp when the player clicks space button.
+				(for it to work it needs to be used in update method becuse it chacks if its clicked all the time).
+				</p>
+	
+				<pre><code class="js">
+				extanded_entity_p.reduce_hp = function()
+				{
+					//on press space reduce hp
+					if(y_input2_p.key_down[y_key.SPACE])
+					{
+						this.hp--;
+						//update filler size
+						this.health_bar.val =this.hp;//make it equal to hp
+						this.health_bar.update_filler();
+					}
+				}//end reduce_hp
+				</code></pre>
+				
+				<p>
+				first we chack if space is clicked ( inputs covered in basic tutorials).<br>
+				then we will make the y_bar instance value equal to hp attribute of extended entity.<br>
+				finally we update the y_bars filler element(that represents the val att visually).
+				<br>
+				<br>
+				i also add a method that changes the bars color randomly just to give an example of how its done:<br>
+				(click c to change color)
+				</p>
+				
+	
+				<pre><code class="js">
+				extanded_entity_p.change_color = function()
+				{
+					if(y_input2_p.key_down[y_key.C])
+					{
+						var color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+						var color2 = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+						<span class=" palette-alizarin" >this.health_bar.change_color(color,color2);
+					</span>}
+				}//end change_color
+				</code></pre>
+				
+				
+				<p>
+				
+				y_bar.change_color(background_color,filler_color);
+				</p>
+					
+				
+			</div><!--end ypart2-->
+			<div class="ypart3"></div><!--end ypart3-->
+			<div class="ypart4"></div><!--end ypart4-->
+		</div>
+	
+    </div>
+    <!-- /.container -->
+	
+    <!-- script higlighter -->
+	
+
+    <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
+    <script src="js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/vendor/video.js"></script>
+    <script src="js/flat-ui.min.js"></script>
+	<script>
+	///scroll to div when link is clicked
+	$( document ).ready(function() {
+	    $("yscroll").on('click', function(e) {
+
+			// prevent default anchor click behavior
+		   e.preventDefault();
+
+		   // animate
+		   $('html, body').animate({
+			   scrollTop: $(this.hash).offset().top
+			 }, 300, function(){
+	   
+			   // when done, add hash to url
+			   // (default click behaviour)
+			   window.location.hash = this.hash;
+			 });
+
+		});
+	});
+	</script>
+
+  </body>
+</html>

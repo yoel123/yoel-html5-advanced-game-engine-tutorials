@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>tutorial 9</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="css/flat-ui.min.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="js/vendor/html5shiv.js"></script>
+      <script src="js/vendor/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+        <h1>yoel html5 2d game engine programming tut 9</h1>
+		<h2>camera</h2>
+		<hr>
+		<div class="row">
+			<div class="tile  palette palette-peter-river">
+				<p>
+				in this tutorial i will show how use my game engine 2d camera
+			    </p>
+			</div>
+			<div class="ypart1">
+				<p>
+				</p>
+				
+				<p>
+				the finished project is in file 9)camera
+				</p>
+				
+				<p>
+				</p>
+				<p>
+					first we will will create a few entitys<br>
+					
+				</p>
+				<pre><code class="js">
+				//game main
+				function main()
+				{
+					var test_world = new y_world("y_game");
+					yoel_engine_p.current_world = test_world;
+					yoel_engine_p.init();
+					
+					
+					//create example entity
+					var test_e = new extanded_entity(100,100,0,"");
+					var test_e2 = new y_entity(100,-100,0,"");
+					var test_e3 = new y_entity(100,100,0,"");
+					var test_e4 = new y_entity(-100,100,0,"");
+					var test_e5 = new y_entity(340,100,0,"");
+					var test_e6 = new y_entity(100,500,0,"");
+					
+				
+					//add it to world	
+					yoel_engine_p.current_world.add(test_e);
+					yoel_engine_p.current_world.add(test_e2);
+					yoel_engine_p.current_world.add(test_e3);
+					yoel_engine_p.current_world.add(test_e4);
+					yoel_engine_p.current_world.add(test_e5);
+					yoel_engine_p.current_world.add(test_e6);
+					
+				
+
+
+				
+				}
+				</code></pre>
+			</div><!--end ypart1-->
+			<div class="ypart2">
+				<p>
+				then we will create a method called ycamera_move.
+				the method will make the camera move when player clicks wasd or arrow keys.
+				
+				</p>
+			
+				<pre><code class="js">
+				extanded_entity_p.ycamera_move = function()
+				{
+					
+				}//end ycamera_move	
+				</code></pre>
+				<p>
+				we will also add it to update method:
+				</p>
+	
+				<pre><code class="js">
+				extanded_entity_p.update = function()
+				{
+					//do stuff when class created
+					this.init();
+					
+					<span class=" palette-alizarin" >
+					this.ycamera_move();
+					</span >
+					
+					//call parent update func
+					y_entity_p.update.call(this); 
+
+				}//end update
+				</code></pre>
+				
+				<p>
+				we will first handle keyboard input (coverd in previous tut)
+				
+				</p>
+				
+	
+				<pre><code class="js">
+				extanded_entity_p.ycamera_move = function()
+				{
+					<span class=" palette-alizarin" >
+					//left
+					if(y_input2_p.key_down[y_key.A] ||y_input2_p.key_down[y_key.left])
+					{
+					
+					}
+					//right
+					if(y_input2_p.key_down[y_key.D] ||y_input2_p.key_down[y_key.right])
+					{
+				
+					}
+					//up
+					if(y_input2_p.key_down[y_key.W]  || y_input2_p.key_down[y_key.up])
+					{
+						
+					}
+					//down
+					if(y_input2_p.key_down[y_key.S]|| y_input2_p.key_down[y_key.down])
+					{
+					
+					}
+					</span >
+				}//end ycamera_move
+				</code></pre>
+				
+				
+				<p>
+				after that we will add camera_move function
+				</p>
+						
+				<pre><code class="js">
+				extanded_entity_p.ycamera_move = function()
+				{
+
+					var type = this.type;
+
+					//left
+					if(y_input2_p.key_down[y_key.A] ||y_input2_p.key_down[y_key.left])
+					{<span class=" palette-alizarin" >
+						y_entity_p.camera_move.call(this,"left",type);</span >
+					}
+					//right
+					if(y_input2_p.key_down[y_key.D] ||y_input2_p.key_down[y_key.right])
+					{<span class=" palette-alizarin" >
+						y_entity_p.camera_move.call(this,"right",type);</span >
+					}
+					//up
+					if(y_input2_p.key_down[y_key.W]  || y_input2_p.key_down[y_key.up])
+					{<span class=" palette-alizarin" >
+							y_entity_p.camera_move.call(this,"up",type);</span >
+					}
+					//down
+					if(y_input2_p.key_down[y_key.S]|| y_input2_p.key_down[y_key.down])
+					{<span class=" palette-alizarin" >
+						y_entity_p.camera_move.call(this,"down",type);</span >
+					}
+					
+				}//end ycamera_move
+				</code></pre>
+				<p>
+				camera_move gets to arguments dirand type.<br>
+				dir is the direction the camera will move (up,down,left,right)<br>
+				type is the type of object that will stay on screen regardless of camera movement.<br>
+				
+				
+				</p>
+				
+				<pre><code class="js">
+				y_entity_p.camera_move.call(this,<span class=" palette-alizarin" >dir,type</span >);
+				</code></pre>
+			
+				
+			</div><!--end ypart2-->
+			<div class="ypart3"></div><!--end ypart3-->
+			<div class="ypart4"></div><!--end ypart4-->
+		</div>
+	
+    </div>
+    <!-- /.container -->
+	
+    <!-- script higlighter -->
+	
+
+    <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
+    <script src="js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/vendor/video.js"></script>
+    <script src="js/flat-ui.min.js"></script>
+	<script>
+	///scroll to div when link is clicked
+	$( document ).ready(function() {
+	    $("yscroll").on('click', function(e) {
+
+			// prevent default anchor click behavior
+		   e.preventDefault();
+
+		   // animate
+		   $('html, body').animate({
+			   scrollTop: $(this.hash).offset().top
+			 }, 300, function(){
+	   
+			   // when done, add hash to url
+			   // (default click behaviour)
+			   window.location.hash = this.hash;
+			 });
+
+		});
+	});
+	</script>
+
+  </body>
+</html>

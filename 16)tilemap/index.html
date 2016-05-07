@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+
+
+	<title>game design</title>
+
+ 	
+
+	<style>
+	
+		#y_game
+		{
+			position:relative;
+			background: #000 none repeat scroll 0 0;
+			overflow:hidden;
+			width:300px;
+		    height:500px;
+			
+		    color:white;
+			font-size:2em;
+			
+		    border:10px solid #333;
+		    margin:30px auto;
+		    box-shadow:5px 5px 10px #444;
+			transform-style: preserve-3d;
+			
+			
+		}
+	
+		.entity
+		{
+			position:absolute;
+			background:blue;
+			height:50px;
+			width:50px;
+			-webkit-transform-style: preserve-3d;
+			backface-visibility: hidden;
+			-webkit-transform: translate3d(0,0,0); 
+			transform: rotate(0deg);
+			-moz-transform:  rotate(0deg);
+			
+			
+		}
+		.hitbox
+		{
+			position:absolute;
+			border:solid 1px red;
+		}
+	</style>
+</head> 
+ 
+<body> 
+
+	<div id="y_game"></div>
+
+	
+	<script src="js/jquery-1.7.1.min.js"></script>
+	<script src="js/yoel_dom_game.js"></script>
+	
+	<script>
+	//game main
+	function main()
+	{
+		var test_world = new y_world("y_game");
+		yoel_engine_p.current_world = test_world;
+		yoel_engine_p.init();
+		
+		var map = [
+			[1,0,0,1],
+			[0,1,1,0],
+			[0,1,1,0],
+			[1,0,0,1]
+		];
+		//create example entity
+		var test_e = new tile_map(100,100,0,map);
+		test_e.map_id = "my_map";
+	
+		
+	
+	    //add it to world	
+        yoel_engine_p.current_world.add(test_e);
+     
+		
+    
+
+
+	
+	}
+
+
+
+
+
+
+ ////////  tile_map////////
+var tile_map = function(x,y,z,map)
+{ 
+  this.did_init = false;
+  this.type = 'tile_map'; 
+  this.map_id = "fersten";
+  this.arr = map;
+  y_entity.call(this,x,y,z,0,""); 
+  this.width = 50;
+  this.height = 50;
+  this.tile_types = 5;
+  
+
+
+} 
+ 
+
+ var tile_map_p = tile_map.prototype; 
+ 
+ tile_map_p.init = function()
+{
+
+    if(this.did_init){return;}//if did init escape 
+
+	this.draw_map();
+	
+	this.did_init = true;
+}//end init 
+
+ tile_map_p.update = function()
+{
+	this.init();
+
+	y_entity_p.update.call(this);
+	
+
+}//end update 
+
+ 
+
+tile_map_p.draw_map = function()
+{
+	//remove last map
+	this.delete_map(0);
+	var map =this.arr;
+	//ytrace(map)
+	for(var x = 0, len = map.length;len > x;x++ )
+	{
+		for(var y = 0, len2 =map[x].length;len2 > y; y++)
+		{
+			//tile pos reltive to container
+			tx = x * this.width;
+			ty = y * this.height;
+			tile_type = map[x][y]; 
+			ytile = new tile(tx,ty,"");
+			ytile.width = this.width;
+			ytile.height = this.height;
+			ytile.tile_id = x+","+y;
+			ytile.tile_type = tile_type;
+			ytile.map_id = this.map_id;
+			y_entity_p.click_chack.call(ytile);
+			yoel_engine_p.current_world.add(ytile);
+		}
+	}
+
+}//end draw_map
+
+tile_map_p.delete_map = function(id)
+{
+	//chack if m (map) is set if not use this map id
+	if(id == 0){ mid = this.map_id}else{mid = id}
+	
+	//get all tiles
+	entity_list = y_entity_p.get_by_type.call(this,"tile");
+	//ytrace(entity_list)
+	var entity_list_len = entity_list.length-1;
+	
+	
+	for(var i = 0; entity_list_len>=i ; i++)
+	{
+		e = entity_list[i];
+		ytrace(e.map_id +"=="+ mid)
+		//chack if same id
+		if(e.map_id == mid)
+		{
+			yremove(this,e)
+		}
+	}
+	
+}
+ //////// end tile_map////////
+
+
+ ////////  tile////////
+var tile = function(x,y,z)
+{ 
+ this.did_init = false;
+ this.type = 'tile'; 
+ this.map_id
+ this.tile_id = 0;
+ this.tile_type = 0;
+ y_entity.call(this,x,y,z,0,""); 
+ y_entity_p.click_chack.call(this);
+ this.tile_colors = [[255, 128, 128],
+                      [128, 255, 128],
+                      [128, 128, 255],
+                      [255, 255, 128],
+                      [255, 128, 255],
+                      [128, 255, 255],
+                      [255, 255, 255]];
+
+} 
+ var tile_p = tile.prototype; 
+ 
+ tile_p.init = function()
+{
+
+	if(this.did_init){return;}//if did init escape 
+	this.reset();
+	this.did_init = true;
+	y_entity_p.click_chack.call(this);
+}//end init 
+
+ tile_p.update = function()
+{
+	this.init();
+	//if(y_entity_p.was_click.call(this)){ytrace("clicked");}
+	y_entity_p.update.call(this); 
+
+ }//end update 
+ 
+tile_p.reset = function()
+{
+	//remove last class
+	$("#"+this.id).attr('class').split(' ').pop();
+	//set new last class (the tile id)
+	t = "yt"+this.tile_type+" "+this.tile_id; 
+	$("#"+this.id).addClass(t);
+	//reset color
+	$("#"+this.id).css("background",'rgb('+this.tile_colors[this.tile_type ]+')');
+
+}//end reset
+
+tile_p.get_id = function()
+{
+	ob = this.tile_id.split(",");
+	return {x:ob[0],y:ob[1]}
+}
+
+ //////// end tile////////
+
+
+
+
+	//main
+	main();
+	</script>
+
+</body> 
+</html>

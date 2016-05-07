@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>tutorial 15</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="css/flat-ui.min.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="img/favicon.ico">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="js/vendor/html5shiv.js"></script>
+      <script src="js/vendor/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+        <h1>yoel html5 2d game engine programming tut 18</h1>
+		<h2>bullet movment</h2>
+		<hr>
+		<div class="row">
+			<div class="tile  palette palette-peter-river">
+				<p>
+				in this tutorial i will show how change world objects("game screen") in my game engine.<br>
+				if you run the finished project click on the blue boxes to change world.
+			    </p>
+			</div>
+			<div class="ypart1">
+				<p>
+				</p>
+				
+				<p>
+				the finished project is in file: 18)change world
+				</p>
+				
+				<p>
+				</p>
+				<p>
+						 world objects holds entity objects. except for the active world "current world"<br>
+						all worlds and thier entity's are not active or visible and dont update.<br>
+						<br>
+						first we will go trough main.<br>
+						we created three worlds:start_world,game_world,end_world.<br>
+						we put them as global variables on window object.<br>
+						we did this so the worlds will be accessible from everywhere.<br>
+						
+						after that we put start_world as current world
+						<br>
+						after that we add a few entitys that we will explain later in this tut.<br>
+						and at the end we deactivated all worlds exept start.
+				</p>
+				<pre><code class="js">
+				//game main
+				function main()
+				{
+							//worlds<span class=" palette-alizarin" >
+					window.start_world = new y_world("y_game");
+					window.game_world = new y_world("y_game");
+					window.end_world = new y_world("y_game");</span>
+					//init engine<span class=" palette-alizarin" >
+					yoel_engine_p.current_world = window.start_world;
+					yoel_engine_p.init();</span>
+
+					var test_e = new extanded_entity(100,100,0,"");
+					var test_e2 = new extanded_entity(200,100,0,"end");
+					var test_e3 = new extanded_entity(250,100,0,"end");
+					var test_e4 = new extanded_entity(250,200,0,"end");
+					var test_e5 = new extanded_entity(150,150,0,"start");
+				
+					//add it to world	
+					//start world
+					window.start_world.add(test_e);
+					
+					//game world
+					window.game_world.add(test_e2);
+					window.game_world.add(test_e3);
+					window.game_world.add(test_e4);
+					//end world
+					window.end_world.add(test_e5);
+				  <span class=" palette-alizarin" >
+				  //only start is active at the start...
+				  window.game_world.not_active()
+				  window.end_world.not_active()</span>
+				  
+
+
+				
+				}
+				</code></pre>
+				
+				<p>
+					
+					the extanded entity in this tut will be used as a button to switch between <br>
+					worlds.<br>
+					first we will add a new att called go_to,it will hold the name of the world<br>
+					that will be switched to once its clicked.
+					
+				</p>
+				<pre><code class="js">
+			
+				var extanded_entity = function(x,y,z,<span class=" palette-alizarin" >go_to</span>)
+				{
+					this.type = 'extanded_entity'; 
+
+					//extand entity
+					y_entity.call(this,x,y,z,3,"");
+					<span class=" palette-alizarin" >
+					//what world to go to when clicked
+					this.go_to = go_to;
+					</span> 
+					
+					this.did_init = false;
+
+				}//end extanded_entity
+				</code></pre>
+				<p>
+					in init we will initialize the click behaviour 
+				</p>
+				
+				<pre><code class="js">
+				extanded_entity_p.init = function()
+				{
+					if(!this.did_init)
+					{
+						ytrace("did init");<span class=" palette-alizarin" >
+							//init click handler
+						 y_entity_p.click_chack.call(this);</span> 
+						this.did_init = true;
+					
+						
+					}
+				}//end init
+				</code></pre>
+				
+				<p>
+				after that we will create a click method:
+				</p>
+				<pre><code class="js">
+				
+				extanded_entity_p.update = function()
+				{
+					//do stuff when class created
+					this.init();
+					
+					<span class=" palette-alizarin" >
+					this.click();</span> 
+					
+					
+					//call parent update func
+					y_entity_p.update.call(this); 
+
+				}//end update
+
+
+			<span class=" palette-alizarin" >
+				extanded_entity_p.click = function()
+				{
+				}//end click</span> 
+				</code></pre>
+				
+				<p>
+				first thing we do in click is to chack if the entity was clicked<br>
+				if its clicked do nothing if its not clicked exit the function<br>
+				<br>
+				after that we chack the go_to att to chack which world we will switch to<br>
+				and lastly we change the game world (if go_to is empthy it will switch to game world).
+				<br>
+				<br>
+				y_world_p.change_world.call(this_world,switch_to world);<br>
+				change_world takes two arguments, first one is the current word, the second is the world<br>
+				we want to switch to.
+				</p>
+				<pre><code class="js">
+				extanded_entity_p.click = function()
+				{
+					if(this.is_clicked){}else{return;}//exit if no click
+					//go to end world
+					if(this.go_to == "end")
+					{<span class=" palette-alizarin" >
+						y_world_p.change_world.call(window.game_world,window.end_world);
+						</span>return;
+					}	
+					//go to start world
+					if(this.go_to == "start")
+					{<span class=" palette-alizarin" >
+						y_world_p.change_world.call(window.end_world,window.start_world);
+						</span>return;
+					}<span class=" palette-alizarin" >
+					//go to game
+					y_world_p.change_world.call(window.start_world,window.game_world);
+				</span>}//end click
+				</code></pre>
+			<div class="ypart2">
+
+					
+				
+			</div><!--end ypart2-->
+			<div class="ypart3"></div><!--end ypart3-->
+			<div class="ypart4"></div><!--end ypart4-->
+		</div>
+	
+    </div>
+    <!-- /.container -->
+	
+    <!-- script higlighter -->
+	
+
+    <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
+    <script src="js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/vendor/video.js"></script>
+    <script src="js/flat-ui.min.js"></script>
+	<script>
+	///scroll to div when link is clicked
+	$( document ).ready(function() {
+	    $("yscroll").on('click', function(e) {
+
+			// prevent default anchor click behavior
+		   e.preventDefault();
+
+		   // animate
+		   $('html, body').animate({
+			   scrollTop: $(this.hash).offset().top
+			 }, 300, function(){
+	   
+			   // when done, add hash to url
+			   // (default click behaviour)
+			   window.location.hash = this.hash;
+			 });
+
+		});
+	});
+	</script>
+
+  </body>
+</html>
